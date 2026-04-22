@@ -13,6 +13,7 @@
             --easy: #4caf50;
             --medium: #fbc02d;
             --hard: #f44336;
+            --catastrophe: #2196f3;
         }
 
         * {
@@ -43,7 +44,7 @@
 
         #game-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             text-align: center;
         }
 
@@ -75,12 +76,15 @@
         .btn-easy { background-color: var(--easy); color: white; border-color: var(--easy); }
         .btn-medium { background-color: var(--medium); color: white; border-color: var(--medium); }
         .btn-hard { background-color: var(--hard); color: white; border-color: var(--hard); }
+        .btn-catastrophe { background-color: var(--catastrophe); color: white; border-color: var(--catastrophe); }
 
         /* Question Styles */
         .question-text {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            line-height: 1.4;
             margin-bottom: 2rem;
             color: var(--text);
+            padding: 0 10px;
         }
 
         .options-grid {
@@ -92,6 +96,7 @@
             background-color: var(--gray);
             border: 1px solid #ddd;
             color: var(--text);
+            text-transform: none; /* Keep word casing as provided in pool */
         }
 
         .option-btn:hover {
@@ -130,12 +135,13 @@
             <button class="btn-easy" onclick="startGame('easy')">easy</button>
             <button class="btn-medium" onclick="startGame('medium')">medium</button>
             <button class="btn-hard" onclick="startGame('hard')">hard</button>
+            <button class="btn-catastrophe" onclick="startGame('catastrophe')">catastrophe</button>
         </div>
 
         <!-- Game Screen -->
         <div id="game-screen" class="screen">
             <div id="question-area">
-                <div class="question-text" id="word-display">word</div>
+                <div class="question-text" id="definition-display">definition goes here</div>
                 <div class="options-grid" id="options-container">
                     <!-- Buttons generated via JS -->
                 </div>
@@ -184,7 +190,7 @@
                 { word: "Rectify", def: "to correct" },
                 { word: "Rue", def: "regret" },
                 { word: "Rustic", def: "rural" },
-                { word: "Savvy", word: "Savvy", def: "smart or clever" },
+                { word: "Savvy", def: "smart or clever" },
                 { word: "Vague", def: "of uncertain, indefinite, or unclear character" }
             ],
             medium: [
@@ -239,85 +245,90 @@
                 { word: "Zealous", def: "showing great energy or enthusiasm" }
             ],
             hard: [
+                { word: "Arduous", def: "hard because it’s challenging" },
+                { word: "Dearth", def: "a lack, scarcity" },
+                { word: "Depravity", def: "wickedness" },
+                { word: "Egregious", def: "shockingly bad" },
+                { word: "Embezzle", def: "steal" },
+                { word: "Fatuous", def: "silly and pointless" },
+                { word: "Inane", def: "silly or pointless" },
+                { word: "Laconic", def: "super brief" },
+                { word: "Nefarious", def: "wicked, criminal, or extremely impious" },
+                { word: "Puerile", def: "childish, immature, or silly" },
+                { word: "Quibble", def: "a slight objection or criticism about a trivial matter" },
+                { word: "Quip", def: "a clever usually taunting remark" },
+                { word: "Rancid", def: "having a strong unpleasant smell or taste" },
+                { word: "Repugnant", def: "extremely offensive or unacceptable" },
+                { word: "Rue", def: "regret" },
+                { word: "Toilsome", def: "hard because it’s draining and monotonous" }
+            ],
+            catastrophe: [
                 { word: "Abstruse", def: "difficult to understand; obscure" },
                 { word: "Adamantine", def: "unbreakable" },
                 { word: "Anathema", def: "something or someone greatly disliked or cursed" },
-                { word: "Arcane", def: "known or understood by only a few; mysterious" },
-                { word: "Arduous", def: "hard because it’s challenging" },
+                { word: "Arcane", def: "known or understood by only a few; mysterious or secret" },
                 { word: "Assiduous", def: "extremely hard-working and persistent" },
-                { word: "Bloviate", def: "to speak at length in a pompous way" },
-                { word: "Bucolic", def: "relating to pleasant aspects of the countryside" },
+                { word: "Bloviate", def: "to speak at length in a pompous or boastful way" },
+                { word: "Bucolic", def: "relating to the pleasant aspects of the countryside and country life" },
                 { word: "Castigate", def: "to reprimand or criticize someone severely" },
-                { word: "Charlatan", def: "a person falsely claiming special knowledge" },
-                { word: "Collude", def: "to secretly cooperate or plot with others" },
-                { word: "Compunctious", def: "feeling guilty or remorseful" },
+                { word: "Charlatan", def: "a person falsely claiming to have a special knowledge or skill; a fraud" },
+                { word: "Collude", def: "to secretly cooperate or plot with others, typically to achieve a deceitful, illegal, or dishonest purpose" },
+                { word: "Compunctious", def: "feeling guilty, remorseful, or uneasy about something you have done or failed to do" },
                 { word: "Cozen", def: "trick or deceive" },
                 { word: "Cupidity", def: "greed for money or possessions" },
-                { word: "Cynosure", def: "the main thing that attracts attention" },
-                { word: "Dearth", def: "a lack, scarcity" },
-                { word: "Depravity", def: "wickedness" },
-                { word: "Dogmatic", def: "stubbornly confident in beliefs" },
-                { word: "Dolorous", def: "feeling or expressing great sorrow" },
-                { word: "Draconian", def: "excessively harsh and severe" },
-                { word: "Egregious", def: "shockingly bad" },
-                { word: "Embezzle", def: "steal" },
+                { word: "Cynosure", def: "the main thing or person that attracts attention" },
+                { word: "Dogmatic", def: "being stubbornly confident in your beliefs or opinions, refusing to consider other viewpoints" },
+                { word: "Dolorous", def: "feeling or expressing great sorrow or distress" },
+                { word: "Draconian", def: "(of laws or their application) excessively harsh and severe" },
                 { word: "Ephemeral", def: "lasting for a very short time" },
-                { word: "Epistemic", def: "relating to knowledge or knowing" },
+                { word: "Epistemic", def: "of or relating to knowledge or knowing; cognition" },
                 { word: "Epitome", def: "a perfect example, embodiment" },
                 { word: "Esoteric", def: "understood by only a small, specialized group" },
-                { word: "Ethereal", def: "extremely delicate and light" },
-                { word: "Fatuous", def: "silly and pointless" },
+                { word: "Ethereal", def: "extremely delicate and light in a way that seems too perfect for this world" },
                 { word: "Fulminate", def: "to complain loudly or angrily" },
                 { word: "Grandiloquent", def: "using fancy, overblown language" },
-                { word: "Hubristic", def: "excessively proud or arrogant" },
-                { word: "Hypochondriac", def: "insanely worried about serious illness" },
+                { word: "Hubristic", def: "excessively proud or arrogant; overconfident in a way that can lead to downfall" },
+                { word: "Hypochondriac", def: "a person who is insanely worried about having a serious illness, often imagining symptoms that aren’t real" },
                 { word: "Iconoclast", def: "someone who challenges traditional beliefs" },
-                { word: "Idiosyncrasy", def: "mode of behavior peculiar to an individual" },
-                { word: "Implicit", def: "suggested without being plainly stated" },
-                { word: "Inane", def: "silly or pointless" },
+                { word: "Idiosyncrasy", def: "a mode of behavior or way of thought peculiar to an individual" },
+                { word: "Implicit", def: "suggested or hinted at without being plainly or directly stated" },
                 { word: "Inexorable", def: "impossible to stop or persuade" },
-                { word: "Irreconcilable", def: "impossible to bring into agreement" },
-                { word: "Jejune", def: "shallow, simplistic, and lacking substance" },
+                { word: "Irreconcilable", def: "impossible to bring into agreement, harmony, or resolution" },
+                { word: "Jejune", def: "shallow, simplistic, and lacking real substance or maturity" },
                 { word: "Judicious", def: "showing good judgment" },
-                { word: "Juxtapose", def: "place things side-by-side to highlight differences" },
-                { word: "Laconic", def: "super brief" },
-                { word: "Macabre", def: "disturbing/horrifying depictions of death" },
+                { word: "Juxtapose", def: "to place two things side-by-side to highlight their differences" },
+                { word: "Macabre", def: "disturbing and horrifying because of involvement with or depiction of death and injury" },
                 { word: "Mendacious", def: "lying or dishonest" },
-                { word: "Meretricious", def: "flashy on surface but lacking value" },
-                { word: "Myopic", def: "lacking imagination or foresight" },
+                { word: "Meretricious", def: "appearing flashy or attractive on the surface but actually cheap or lacking real value" },
+                { word: "Myopic", def: "lacking imagination, foresight, or intellectual insight; nearsighted" },
                 { word: "Nadir", def: "the worst or lowest point of something" },
-                { word: "Nefarious", def: "wicked, criminal" },
-                { word: "Nominalization", def: "turning a word into a noun" },
-                { word: "Obdurate", def: "stubbornly refusing to change opinion" },
-                { word: "Obfuscate", def: "to make something confusing or unclear" },
-                { word: "Oblique", def: "not expressed in a direct or clear way" },
-                { word: "Opulent", def: "very rich, luxurious" },
-                { word: "Ostentatious", def: "designed to impress; showy" },
-                { word: "Phlegmatic", def: "unemotional and stolidly calm" },
-                { word: "Pompous", def: "excessively self-important" },
-                { word: "Premonition", def: "strong feeling something is about to happen" },
-                { word: "Puerile", def: "childish, immature" },
-                { word: "Punctilious", def: "great attention to detail or behavior" },
+                { word: "Nominalization", def: "turning a word (usually a verb or adjective) into a noun" },
+                { word: "Obdurate", def: "stubbornly refusing to change one's opinion or course of action" },
+                { word: "Obfuscate", def: "to make something confusing, unclear, or hard to understand" },
+                { word: "Oblique", def: "not expressed in a straight, direct, or clear way; indirect, vague, or subtly stated" },
+                { word: "Opulent", def: "very rich, luxurious, and extravagant" },
+                { word: "Ostentatious", def: "designed to impress or attract notice; showy" },
+                { word: "Phlegmatic", def: "(of a person) having an unemotional and stolidly calm disposition" },
+                { word: "Pompous", def: "excessively self-important in speech or manner; inflated behavior" },
+                { word: "Premonition", def: "a strong feeling that something is about to happen, especially something unpleasant" },
+                { word: "Punctilious", def: "showing great attention to detail or correct behavior" },
                 { word: "Querulous", def: "constantly complaining" },
-                { word: "Quibble", def: "slight objection about a trivial matter" },
-                { word: "Quip", def: "a clever usually taunting remark" },
                 { word: "Quixotic", def: "super unrealistic and impractical" },
-                { word: "Rancid", def: "unpleasant smell or taste" },
-                { word: "Repugnant", def: "extremely offensive" },
-                { word: "Rumination", def: "deep, repetitive thinking" },
+                { word: "Rumination", def: "deep, repetitive thinking over something" },
                 { word: "Salubrious", def: "health-giving; healthy" },
-                { word: "Stigmatize", def: "mark someone with disgrace" },
+                { word: "Stigmatize", def: "to mark someone or something with disgrace, shame or a negative label" },
                 { word: "Superfluous", def: "unnecessary/unimportant" },
-                { word: "Taciturn", def: "reserved or uncommunicative in speech" },
-                { word: "Threnody", def: "a song or writing expressing grief" },
-                { word: "Toilsome", def: "hard because it’s draining" },
+                { word: "Taciturn", def: "reserved or uncommunicative in speech; saying very little" },
+                { word: "Threnody", def: "a song, poem, or piece of writing expressing grief, lamentation, or mourning" },
                 { word: "Umbrage", def: "offense or annoyance" },
                 { word: "Valetudinarian", def: "Hypochondriac" },
-                { word: "Vehement", def: "showing strong feelings" },
-                { word: "Vitriolic", def: "harsh, bitter, and aggressive" },
-                { word: "Zealot", def: "a fanatic devoted to a rigid belief" }
+                { word: "Vitriolic", def: "harsh, bitter, and aggressive in tone" },
+                { word: "Zealot", def: "a fanatic devoted to a rigid belief, often aggressively" }
             ]
         };
+
+        const trickPrefixes = ["Ab", "Ad", "In", "Ex", "Con", "Sub", "Per", "Pre"];
+        const trickSuffixes = ["ious", "ient", "ate", "ic", "al", "ine", "ous"];
 
         let currentDifficulty = '';
         let currentQueue = [];
@@ -331,7 +342,6 @@
 
         function startGame(difficulty) {
             currentDifficulty = difficulty;
-            // Clone and shuffle the word list for this session
             currentQueue = [...vocabPool[difficulty]].sort(() => Math.random() - 0.5);
             score = 0;
             updateScoreDisplay();
@@ -345,6 +355,20 @@
             document.getElementById('remain-val').textContent = currentQueue.length;
         }
 
+        function generateTrickWord(realWord) {
+            const roots = ["clam", "dict", "duc", "ject", "pel", "pos", "strict", "ven", "vor"];
+            const p = trickPrefixes[Math.floor(Math.random() * trickPrefixes.length)];
+            const s = trickSuffixes[Math.floor(Math.random() * trickSuffixes.length)];
+            const r = roots[Math.floor(Math.random() * roots.length)];
+            
+            // Generate a word that looks like a real vocab word
+            let trick = (p + r + s).toLowerCase();
+            
+            // Ensure we don't accidentally make the real word
+            if (trick === realWord.toLowerCase()) return generateTrickWord(realWord);
+            return trick;
+        }
+
         function nextQuestion() {
             if (currentQueue.length === 0) {
                 endGame();
@@ -352,26 +376,51 @@
             }
 
             currentQuestion = currentQueue.pop();
-            document.getElementById('word-display').textContent = currentQuestion.word;
+            const display = document.getElementById('definition-display');
+            
+            // In catastrophe, we show the definition, not the word
+            if (currentDifficulty === 'catastrophe') {
+                display.textContent = `definition: "${currentQuestion.def}"`;
+            } else {
+                display.textContent = `what is the definition of: "${currentQuestion.word.toLowerCase()}"?`;
+            }
+
             document.getElementById('feedback').textContent = '';
             
-            // Generate options
-            const options = [currentQuestion.def];
-            
-            // Get 3 incorrect answers from the same pool
-            const otherDefs = vocabPool[currentDifficulty]
-                .filter(item => item.word !== currentQuestion.word)
-                .map(item => item.def);
-            
-            // Shuffle pool and pick 3
-            const shuffledOthers = otherDefs.sort(() => Math.random() - 0.5);
-            options.push(...shuffledOthers.slice(0, 3));
-            
-            // Shuffle final 4 options
-            const shuffledOptions = options.sort(() => Math.random() - 0.5);
+            let options = [];
+            let optionCount = (currentDifficulty === 'catastrophe') ? 5 : 4;
 
+            if (currentDifficulty === 'catastrophe') {
+                // Answers are the words themselves
+                options.push(currentQuestion.word.toLowerCase());
+                
+                // Add real words from pool first
+                const poolOthers = vocabPool.catastrophe
+                    .filter(i => i.word !== currentQuestion.word)
+                    .map(i => i.word.toLowerCase());
+                
+                const shuffledPool = poolOthers.sort(() => Math.random() - 0.5);
+                options.push(...shuffledPool.slice(0, 2));
+
+                // Fill remaining with generated trick words
+                while (options.length < optionCount) {
+                    let trick = generateTrickWord(currentQuestion.word);
+                    if (!options.includes(trick)) options.push(trick);
+                }
+            } else {
+                // Standard mode logic
+                options.push(currentQuestion.def);
+                const otherDefs = vocabPool[currentDifficulty]
+                    .filter(item => item.word !== currentQuestion.word)
+                    .map(item => item.def);
+                const shuffledOthers = otherDefs.sort(() => Math.random() - 0.5);
+                options.push(...shuffledOthers.slice(0, 3));
+            }
+            
+            const shuffledOptions = options.sort(() => Math.random() - 0.5);
             const container = document.getElementById('options-container');
             container.innerHTML = '';
+            
             shuffledOptions.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
@@ -383,12 +432,12 @@
             updateScoreDisplay();
         }
 
-        function checkAnswer(selectedDef, btn) {
-            const isCorrect = (selectedDef === currentQuestion.def);
+        function checkAnswer(selected, btn) {
+            const correctValue = (currentDifficulty === 'catastrophe') ? currentQuestion.word.toLowerCase() : currentQuestion.def;
+            const isCorrect = (selected === correctValue);
             const feedback = document.getElementById('feedback');
             const allButtons = document.querySelectorAll('.option-btn');
             
-            // Disable buttons temporarily
             allButtons.forEach(b => b.disabled = true);
 
             if (isCorrect) {
@@ -398,14 +447,13 @@
                 btn.style.backgroundColor = 'var(--easy)';
                 btn.style.color = 'white';
             } else {
-                feedback.textContent = 'wrong';
+                feedback.textContent = 'incorrect';
                 feedback.style.color = 'var(--hard)';
                 btn.style.backgroundColor = 'var(--hard)';
                 btn.style.color = 'white';
                 
-                // Highlight correct answer
                 allButtons.forEach(b => {
-                    if (b.textContent === currentQuestion.def) {
+                    if (b.textContent === correctValue) {
                         b.style.backgroundColor = 'var(--easy)';
                         b.style.color = 'white';
                     }
@@ -414,7 +462,7 @@
 
             setTimeout(() => {
                 nextQuestion();
-            }, 1200);
+            }, 1500);
         }
 
         function endGame() {
