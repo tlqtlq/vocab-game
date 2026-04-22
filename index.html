@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vocab game</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #000000;
+            --gray: #f0f0f0;
+            --dark-gray: #666666;
+            --easy: #4caf50;
+            --medium: #fbc02d;
+            --hard: #f44336;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-transform: lowercase;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--dark-gray);
+            font-weight: 300;
+            margin-bottom: 2rem;
+            letter-spacing: -1px;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .active {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: 2px solid var(--text);
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+            outline: none;
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        /* Homepage Buttons */
+        .btn-easy { background-color: var(--easy); color: white; border-color: var(--easy); }
+        .btn-medium { background-color: var(--medium); color: white; border-color: var(--medium); }
+        .btn-hard { background-color: var(--hard); color: white; border-color: var(--hard); }
+
+        /* Question Styles */
+        .question-text {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text);
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: var(--gray);
+            border: 1px solid #ddd;
+            color: var(--text);
+        }
+
+        .option-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .score-display {
+            margin-top: 2rem;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        #feedback {
+            margin-top: 15px;
+            height: 20px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            border: none;
+            text-decoration: underline;
+            background: none;
+            color: var(--dark-gray);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>vocab game</h1>
+
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen active">
+            <button class="btn-easy" onclick="startGame('easy')">easy</button>
+            <button class="btn-medium" onclick="startGame('medium')">medium</button>
+            <button class="btn-hard" onclick="startGame('hard')">hard</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div id="question-area">
+                <div class="question-text" id="word-display">word</div>
+                <div class="options-grid" id="options-container">
+                    <!-- Buttons generated via JS -->
+                </div>
+            </div>
+            <div id="feedback"></div>
+            <div class="score-display">
+                score: <span id="score-val">0</span> | remaining: <span id="remain-val">0</span>
+            </div>
+            <button class="back-btn" onclick="showHome()">back to menu</button>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="screen">
+            <h2 id="final-msg">game over</h2>
+            <p id="final-score-text"></p>
+            <button class="back-btn" style="font-size: 1.2rem;" onclick="showHome()">play again</button>
+        </div>
+    </div>
+
+    <script>
+        const vocabPool = {
+            easy: [
+                { word: "Abstract", def: "based on ideas or theories rather than physical objects or concrete facts" },
+                { word: "Ambiguous", def: "having more than one possible meaning or being unclear or uncertain" },
+                { word: "Arbitrary", def: "based on random choice not reason or rule" },
+                { word: "Benevolent", def: "kind, well-meaning" },
+                { word: "Benign", def: "favorable, not threatening, mild" },
+                { word: "Bolster", def: "to support or strengthen" },
+                { word: "Clique", def: "a small group of people with shared interests" },
+                { word: "Coax", def: "gently and persistently persuade someone" },
+                { word: "Conspicuous", def: "standing out so as to be clearly visible" },
+                { word: "Conventional", def: "following traditional, usual, or widely accepted ways" },
+                { word: "Deter", def: "to discourage or prevent" },
+                { word: "Diligent", def: "showing steady and earnest care and effort" },
+                { word: "Eloquent", def: "well-spoken, persuasive" },
+                { word: "Explicit", def: "stated clearly and directly" },
+                { word: "Gratify", def: "to please or satisfy" },
+                { word: "Hinder", def: "to create difficulties for someone" },
+                { word: "Immaculate", def: "perfectly clean, neat, or tidy" },
+                { word: "Impede", def: "to delay or obstruct" },
+                { word: "Indifferent", def: "having no particular interest or sympathy" },
+                { word: "Inept", def: "lacking skill or ability" },
+                { word: "Mundane", def: "dull/lacking interest (ordinarily)" },
+                { word: "Neglect", def: "fail to care for properly" },
+                { word: "Oblivious", def: "not aware of or concerned about surroundings" },
+                { word: "Rectify", def: "to correct" },
+                { word: "Rue", def: "regret" },
+                { word: "Rustic", def: "rural" },
+                { word: "Savvy", word: "Savvy", def: "smart or clever" },
+                { word: "Vague", def: "of uncertain, indefinite, or unclear character" }
+            ],
+            medium: [
+                { word: "Accentuate", def: "to emphasize or make something more noticeable" },
+                { word: "Adroit", def: "skilled, clever, or highly capable" },
+                { word: "Alacrity", def: "brisk and cheerful readiness" },
+                { word: "Ascertain", def: "to find out and make sure of" },
+                { word: "Assimilate", def: "to absorb or fully understand something" },
+                { word: "Assuage", def: "make an unpleasant feeling less intense" },
+                { word: "Astute", def: "having an ability to accurately assess situations" },
+                { word: "Audacious", def: "showing a willingness to take bold risks" },
+                { word: "Bamboozle", def: "to trick, deceive, or confuse someone" },
+                { word: "Banal", def: "so ordinary or predictable that it is boring" },
+                { word: "Belligerent", def: "hostile, aggressive, and ready to fight" },
+                { word: "Berate", def: "scold or criticize someone angrily" },
+                { word: "Cognizant", def: "aware or informed" },
+                { word: "Colloquial", def: "used in ordinary or familiar conversation" },
+                { word: "Corroborate", def: "confirm or give support to a statement" },
+                { word: "Culminate", def: "to reach a high point or final stage" },
+                { word: "Derogatory", def: "showing a lack of respect" },
+                { word: "Discern", def: "perceive or recognize something" },
+                { word: "Divulge", def: "to reveal something secret" },
+                { word: "Embellish", def: "make something more attractive by adding details" },
+                { word: "Empirical", def: "based on observation or experience" },
+                { word: "Enigmatic", def: "mysterious and difficult to understand" },
+                { word: "Exacerbate", def: "make a problem or bad feeling worse" },
+                { word: "Exonerate", def: "absolve someone from blame" },
+                { word: "Fanatic", def: "any extreme, overhyped individual" },
+                { word: "Fastidious", def: "very attentive to accuracy and detail" },
+                { word: "Flaunt", def: "to flex to attract attention or admiration" },
+                { word: "Garrulous", def: "excessively talkative" },
+                { word: "Gregarious", def: "sociable; enjoys company" },
+                { word: "Lethargic", def: "sluggish; lacking energy" },
+                { word: "Loquacious", def: "tending to talk a great deal" },
+                { word: "Magnanimous", def: "very generous or forgiving" },
+                { word: "Meticulous", def: "showing great attention to detail" },
+                { word: "Monotonous", def: "dull, tedious, and repetitious" },
+                { word: "Narcissist", def: "person with excessive self-interest" },
+                { word: "Omen", def: "a sign or event believed to predict the future" },
+                { word: "Ostracize", def: "to exclude someone from a group" },
+                { word: "Paramount", def: "more important than anything else" },
+                { word: "Pristine", def: "in original condition" },
+                { word: "Retrospect", def: "the act of thinking about past events" },
+                { word: "Salient", def: "most important or prominent" },
+                { word: "Synthesize", def: "to combine different ideas into a new whole" },
+                { word: "Trepidation", def: "fear or anxiety about something" },
+                { word: "Ubiquitous", def: "seen almost anywhere you go" },
+                { word: "Unprecedented", def: "never done or known before" },
+                { word: "Venerate", def: "to regard with great respect" },
+                { word: "Vilify", def: "to speak badly about someone" },
+                { word: "Vindicate", def: "to prove that someone was right or not guilty" },
+                { word: "Zealous", def: "showing great energy or enthusiasm" }
+            ],
+            hard: [
+                { word: "Abstruse", def: "difficult to understand; obscure" },
+                { word: "Adamantine", def: "unbreakable" },
+                { word: "Anathema", def: "something or someone greatly disliked or cursed" },
+                { word: "Arcane", def: "known or understood by only a few; mysterious" },
+                { word: "Arduous", def: "hard because it’s challenging" },
+                { word: "Assiduous", def: "extremely hard-working and persistent" },
+                { word: "Bloviate", def: "to speak at length in a pompous way" },
+                { word: "Bucolic", def: "relating to pleasant aspects of the countryside" },
+                { word: "Castigate", def: "to reprimand or criticize someone severely" },
+                { word: "Charlatan", def: "a person falsely claiming special knowledge" },
+                { word: "Collude", def: "to secretly cooperate or plot with others" },
+                { word: "Compunctious", def: "feeling guilty or remorseful" },
+                { word: "Cozen", def: "trick or deceive" },
+                { word: "Cupidity", def: "greed for money or possessions" },
+                { word: "Cynosure", def: "the main thing that attracts attention" },
+                { word: "Dearth", def: "a lack, scarcity" },
+                { word: "Depravity", def: "wickedness" },
+                { word: "Dogmatic", def: "stubbornly confident in beliefs" },
+                { word: "Dolorous", def: "feeling or expressing great sorrow" },
+                { word: "Draconian", def: "excessively harsh and severe" },
+                { word: "Egregious", def: "shockingly bad" },
+                { word: "Embezzle", def: "steal" },
+                { word: "Ephemeral", def: "lasting for a very short time" },
+                { word: "Epistemic", def: "relating to knowledge or knowing" },
+                { word: "Epitome", def: "a perfect example, embodiment" },
+                { word: "Esoteric", def: "understood by only a small, specialized group" },
+                { word: "Ethereal", def: "extremely delicate and light" },
+                { word: "Fatuous", def: "silly and pointless" },
+                { word: "Fulminate", def: "to complain loudly or angrily" },
+                { word: "Grandiloquent", def: "using fancy, overblown language" },
+                { word: "Hubristic", def: "excessively proud or arrogant" },
+                { word: "Hypochondriac", def: "insanely worried about serious illness" },
+                { word: "Iconoclast", def: "someone who challenges traditional beliefs" },
+                { word: "Idiosyncrasy", def: "mode of behavior peculiar to an individual" },
+                { word: "Implicit", def: "suggested without being plainly stated" },
+                { word: "Inane", def: "silly or pointless" },
+                { word: "Inexorable", def: "impossible to stop or persuade" },
+                { word: "Irreconcilable", def: "impossible to bring into agreement" },
+                { word: "Jejune", def: "shallow, simplistic, and lacking substance" },
+                { word: "Judicious", def: "showing good judgment" },
+                { word: "Juxtapose", def: "place things side-by-side to highlight differences" },
+                { word: "Laconic", def: "super brief" },
+                { word: "Macabre", def: "disturbing/horrifying depictions of death" },
+                { word: "Mendacious", def: "lying or dishonest" },
+                { word: "Meretricious", def: "flashy on surface but lacking value" },
+                { word: "Myopic", def: "lacking imagination or foresight" },
+                { word: "Nadir", def: "the worst or lowest point of something" },
+                { word: "Nefarious", def: "wicked, criminal" },
+                { word: "Nominalization", def: "turning a word into a noun" },
+                { word: "Obdurate", def: "stubbornly refusing to change opinion" },
+                { word: "Obfuscate", def: "to make something confusing or unclear" },
+                { word: "Oblique", def: "not expressed in a direct or clear way" },
+                { word: "Opulent", def: "very rich, luxurious" },
+                { word: "Ostentatious", def: "designed to impress; showy" },
+                { word: "Phlegmatic", def: "unemotional and stolidly calm" },
+                { word: "Pompous", def: "excessively self-important" },
+                { word: "Premonition", def: "strong feeling something is about to happen" },
+                { word: "Puerile", def: "childish, immature" },
+                { word: "Punctilious", def: "great attention to detail or behavior" },
+                { word: "Querulous", def: "constantly complaining" },
+                { word: "Quibble", def: "slight objection about a trivial matter" },
+                { word: "Quip", def: "a clever usually taunting remark" },
+                { word: "Quixotic", def: "super unrealistic and impractical" },
+                { word: "Rancid", def: "unpleasant smell or taste" },
+                { word: "Repugnant", def: "extremely offensive" },
+                { word: "Rumination", def: "deep, repetitive thinking" },
+                { word: "Salubrious", def: "health-giving; healthy" },
+                { word: "Stigmatize", def: "mark someone with disgrace" },
+                { word: "Superfluous", def: "unnecessary/unimportant" },
+                { word: "Taciturn", def: "reserved or uncommunicative in speech" },
+                { word: "Threnody", def: "a song or writing expressing grief" },
+                { word: "Toilsome", def: "hard because it’s draining" },
+                { word: "Umbrage", def: "offense or annoyance" },
+                { word: "Valetudinarian", def: "Hypochondriac" },
+                { word: "Vehement", def: "showing strong feelings" },
+                { word: "Vitriolic", def: "harsh, bitter, and aggressive" },
+                { word: "Zealot", def: "a fanatic devoted to a rigid belief" }
+            ]
+        };
+
+        let currentDifficulty = '';
+        let currentQueue = [];
+        let score = 0;
+        let currentQuestion = null;
+
+        function showHome() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('home-screen').classList.add('active');
+        }
+
+        function startGame(difficulty) {
+            currentDifficulty = difficulty;
+            // Clone and shuffle the word list for this session
+            currentQueue = [...vocabPool[difficulty]].sort(() => Math.random() - 0.5);
+            score = 0;
+            updateScoreDisplay();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('game-screen').classList.add('active');
+            nextQuestion();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-val').textContent = score;
+            document.getElementById('remain-val').textContent = currentQueue.length;
+        }
+
+        function nextQuestion() {
+            if (currentQueue.length === 0) {
+                endGame();
+                return;
+            }
+
+            currentQuestion = currentQueue.pop();
+            document.getElementById('word-display').textContent = currentQuestion.word;
+            document.getElementById('feedback').textContent = '';
+            
+            // Generate options
+            const options = [currentQuestion.def];
+            
+            // Get 3 incorrect answers from the same pool
+            const otherDefs = vocabPool[currentDifficulty]
+                .filter(item => item.word !== currentQuestion.word)
+                .map(item => item.def);
+            
+            // Shuffle pool and pick 3
+            const shuffledOthers = otherDefs.sort(() => Math.random() - 0.5);
+            options.push(...shuffledOthers.slice(0, 3));
+            
+            // Shuffle final 4 options
+            const shuffledOptions = options.sort(() => Math.random() - 0.5);
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(opt, btn);
+                container.appendChild(btn);
+            });
+            
+            updateScoreDisplay();
+        }
+
+        function checkAnswer(selectedDef, btn) {
+            const isCorrect = (selectedDef === currentQuestion.def);
+            const feedback = document.getElementById('feedback');
+            const allButtons = document.querySelectorAll('.option-btn');
+            
+            // Disable buttons temporarily
+            allButtons.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                score++;
+                feedback.textContent = 'correct';
+                feedback.style.color = 'var(--easy)';
+                btn.style.backgroundColor = 'var(--easy)';
+                btn.style.color = 'white';
+            } else {
+                feedback.textContent = 'wrong';
+                feedback.style.color = 'var(--hard)';
+                btn.style.backgroundColor = 'var(--hard)';
+                btn.style.color = 'white';
+                
+                // Highlight correct answer
+                allButtons.forEach(b => {
+                    if (b.textContent === currentQuestion.def) {
+                        b.style.backgroundColor = 'var(--easy)';
+                        b.style.color = 'white';
+                    }
+                });
+            }
+
+            setTimeout(() => {
+                nextQuestion();
+            }, 1200);
+        }
+
+        function endGame() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const endScreen = document.getElementById('end-screen');
+            endScreen.classList.add('active');
+            
+            const total = vocabPool[currentDifficulty].length;
+            document.getElementById('final-score-text').textContent = `you scored ${score} out of ${total} on ${currentDifficulty} mode.`;
+        }
+    </script>
+</body>
+</html>
