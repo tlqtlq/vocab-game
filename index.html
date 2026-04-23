@@ -13,7 +13,8 @@
             --easy: #4caf50;
             --medium: #fbc02d;
             --hard: #f44336;
-            --quiz: #000000;
+            --extreme: #9c27b0;
+            --skull: #000000;
             --accent: #2196f3;
         }
 
@@ -76,7 +77,7 @@
         .btn-easy { background-color: var(--easy); color: white; border-color: var(--easy); }
         .btn-medium { background-color: var(--medium); color: white; border-color: var(--medium); }
         .btn-hard { background-color: var(--hard); color: white; border-color: var(--hard); }
-        .btn-quiz { background-color: var(--quiz); color: white; border-color: var(--quiz); }
+        .btn-quiz { background-color: var(--skull); color: white; border-color: var(--skull); }
         
         .btn-dictionary { 
             background-color: transparent; 
@@ -95,7 +96,7 @@
         .difficulty-scale {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 1.5rem;
             padding: 10px;
             background: rgba(0,0,0,0.03);
@@ -106,14 +107,14 @@
         }
 
         .diff-emoji {
-            font-size: 1.8rem;
-            opacity: 0.2;
+            font-size: 1.5rem;
+            opacity: 0.1;
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .diff-emoji.active-diff {
             opacity: 1;
-            transform: scale(1.2);
+            transform: scale(1.3);
         }
 
         .question-text {
@@ -213,8 +214,9 @@
                     <span class="diff-emoji" data-level="2">🤨</span>
                     <span class="diff-emoji" data-level="3">🧐</span>
                     <span class="diff-emoji" data-level="4">😱</span>
+                    <span class="diff-emoji" data-level="5">💀</span>
                 </div>
-                <div class="question-text" id="question-display">definition goes here</div>
+                <div class="question-text" id="question-display"></div>
                 <div class="options-grid" id="options-container"></div>
             </div>
             <div id="feedback"></div>
@@ -239,28 +241,19 @@
 
     <script>
         const vocabPool = {
-            easy: [
+            level1: [
                 { word: "Abstract", def: "based on ideas or theories rather than physical objects or concrete facts", diff: 1 },
-                { word: "Ambiguous", def: "having more than one possible meaning or being unclear or uncertain", diff: 1 },
-                { word: "Arbitrary", def: "based on random choice not reason or rule", diff: 1 },
                 { word: "Benevolent", def: "kind, well-meaning", diff: 1 },
                 { word: "Benign", def: "favorable, not threatening, mild", diff: 1 },
                 { word: "Bolster", def: "to support or strengthen", diff: 1 },
-                { word: "Clique", def: "a small group of people, with shared interests or other features in common, who spend time together and do not readily allow others to join them", diff: 1 },
-                { word: "Coax", def: "gently and persistently persuade (someone) to do something", diff: 1 },
                 { word: "Conspicuous", def: "standing out so as to be clearly visible", diff: 1 },
-                { word: "Conventional", def: "following traditional, usual, or widely accepted ways of doing things", diff: 1 },
                 { word: "Deter", def: "to discourage or prevent", diff: 1 },
                 { word: "Diligent", def: "showing steady and earnest care and effort in one's work", diff: 1 },
                 { word: "Eloquent", def: "well-spoken, persuasive", diff: 1 },
-                { word: "Explicit", def: "stated clearly and directly, leaving no room for confusion or doubt", diff: 1 },
                 { word: "Gratify", def: "to please or satisfy", diff: 1 },
                 { word: "Hinder", def: "to create difficulties for someone, resulting in delay or obstruction", diff: 1 },
                 { word: "Immaculate", def: "perfectly clean, neat, or tidy", diff: 1 },
-                { word: "Impede", def: "to delay, obstruct, or make progress more difficult", diff: 1 },
-                { word: "Implicit", def: "suggested or hinted at without being plainly or directly stated", diff: 1 },
                 { word: "Indifferent", def: "having no particular interest or sympathy; unconcerned", diff: 1 },
-                { word: "Inept", def: "lacking skill or ability; clumsy or awkward", diff: 1 },
                 { word: "Mundane", def: "dull/lacking interest (ordinarily)", diff: 1 },
                 { word: "Neglect", def: "fail to care for properly", diff: 1 },
                 { word: "Oblivious", def: "not aware of or not concerned about what is happening around you", diff: 1 },
@@ -268,138 +261,134 @@
                 { word: "Rue", def: "regret", diff: 1 },
                 { word: "Rustic", def: "rural", diff: 1 },
                 { word: "Savvy", def: "smart or clever", diff: 1 },
-                { word: "Vague", def: "of uncertain, indefinite, or unclear character or meaning", diff: 1 }
+                { word: "Vague", def: "of uncertain, indefinite, or unclear character or meaning", diff: 1 },
+                { word: "Savvy", def: "smart or clever", diff: 1 }
             ],
-            medium: [
-                { word: "Accentuate", def: "to emphasize or make something more noticeable", diff: 2 },
-                { word: "Adroit", def: "skilled, clever, or highly capable–especially in handling situations or using one’s hands or mind", diff: 2 },
-                { word: "Alacrity", def: "brisk and cheerful readiness", diff: 2 },
+            level2: [
+                { word: "Ambiguous", def: "having more than one possible meaning or being unclear or uncertain", diff: 2 },
+                { word: "Arbitrary", def: "based on random choice not reason or rule", diff: 2 },
                 { word: "Ascertain", def: "to find out and make sure of", diff: 2 },
                 { word: "Assimilate", def: "to absorb or fully understand something", diff: 2 },
                 { word: "Assuage", def: "make (an unpleasant feeling) less intense", diff: 2 },
                 { word: "Astute", def: "having or showing an ability to accurately assess situations or people and turn this to one's advantage", diff: 2 },
                 { word: "Audacious", def: "showing a willingness to take surprisingly bold risks", diff: 2 },
-                { word: "Bamboozle", def: "to trick, deceive, or confuse someone", diff: 2 },
-                { word: "Banal", def: "something that is so ordinary, predictable, or unoriginal that it is boring and ineffective", diff: 2 },
                 { word: "Belligerent", def: "hostile, aggressive, and ready to fight", diff: 2 },
                 { word: "Berate", def: "scold or criticize (someone) angrily", diff: 2 },
+                { word: "Clique", def: "a small group of people, with shared interests or other features in common, who spend time together and do not readily allow others to join them", diff: 2 },
+                { word: "Coax", def: "gently and persistently persuade (someone) to do something", diff: 2 },
                 { word: "Cognizant", def: "aware or informed", diff: 2 },
-                { word: "Colloquial", def: "used in ordinary or familiar conversation; not formal or literary", diff: 2 },
-                { word: "Corroborate", def: "confirm or give support to (a statement, theory, or finding)", diff: 2 },
-                { word: "Culminate", def: "to reach a high point, climax, or final stage of a process", diff: 2 },
+                { word: "Conventional", def: "following traditional, usual, or widely accepted ways of doing things", diff: 2 },
                 { word: "Derogatory", def: "showing a lack of respect or a low opinion of someone or something", diff: 2 },
                 { word: "Discern", def: "perceive or recognize something", diff: 2 },
                 { word: "Divulge", def: "to reveal something secret", diff: 2 },
                 { word: "Embellish", def: "make (something) more attractive by the addition of decorative details or features", diff: 2 },
-                { word: "Empirical", def: "based on observation or experience", diff: 2 },
-                { word: "Enigmatic", def: "mysterious and difficult to understand", diff: 2 },
-                { word: "Exacerbate", def: "make (a problem, bad situation, or negative feeling) worse", diff: 2 },
-                { word: "Exonerate", def: "absolve (someone) from blame for a fault or wrongdoing, especially after due consideration of the case", diff: 2 },
-                { word: "Fanatic", def: "any extreme, overhyped individual", diff: 2 },
-                { word: "Fastidious", def: "very attentive to and concerned about accuracy and detail", diff: 2 },
-                { word: "Flaunt", def: "to flex to attract attention or admiration", diff: 2 },
-                { word: "Garrulous", def: "excessively talkative", diff: 2 },
+                { word: "Explicit", def: "stated clearly and directly, leaving no room for confusion or doubt", diff: 2 },
                 { word: "Gregarious", def: "sociable; enjoys company", diff: 2 },
+                { word: "Impede", def: "to delay, obstruct, or make progress more difficult", diff: 2 },
+                { word: "Implicit", def: "suggested or hinted at without being plainly or directly stated", diff: 2 },
+                { word: "Inept", def: "lacking skill or ability; clumsy or awkward", diff: 2 },
                 { word: "Lethargic", def: "sluggish; lacking energy", diff: 2 },
-                { word: "Loquacious", def: "tending to talk a great deal; talkative", diff: 2 },
-                { word: "Magnanimous", def: "very generous or forgiving, especially toward a rival or someone less powerful", diff: 2 },
                 { word: "Meticulous", def: "showing great attention to detail; very careful and precise", diff: 2 },
                 { word: "Monotonous", def: "dull, tedious, and repetitious; lacking in variety and interest", diff: 2 },
-                { word: "Myopic", def: "lacking imagination, foresight, or intellectual insight; nearsighted", diff: 2 },
-                { word: "Narcissist", def: "a person who has an excessive interest in or admiration of themselves; often self-centered and lacking empathy", diff: 2 },
                 { word: "Omen", def: "a sign or event believed to predict the future", diff: 2 },
-                { word: "Ostracize", def: "to exclude someone from a group, society, or community", diff: 2 },
-                { word: "Paramount", def: "more important than anything else; supreme", diff: 2 },
                 { word: "Pristine", def: "in original condition", diff: 2 },
-                { word: "Retrospect", def: "the act of thinking about or reviewing past events or situations, often with a new perspective or understanding", diff: 2 },
-                { word: "Salient", def: "most important, or prominent; standing out clearly", diff: 2 },
-                { word: "Synthesize", def: "to combine different ideas or things into a single, new whole", diff: 2 },
                 { word: "Trepidation", def: "fear or anxiety about something", diff: 2 },
-                { word: "Ubiquitous", def: "seen almost anywhere you go", diff: 2 },
                 { word: "Unprecedented", def: "never done or known before", diff: 2 },
-                { word: "Vehement", def: "showing strong feelings or emotions", diff: 2 },
-                { word: "Venerate", def: "to regard with great respect or admiration", diff: 2 },
-                { word: "Vilify", def: "to speak badly about someone, making them seem evil or much worse than they really are", diff: 2 },
                 { word: "Vindicate", def: "to prove that someone or something was right, justified, or not guilty", diff: 2 },
                 { word: "Zealous", def: "having or showing great energy or enthusiasm for a cause", diff: 2 }
             ],
-            hard: [
+            level3: [
+                { word: "Accentuate", def: "to emphasize or make something more noticeable", diff: 3 },
+                { word: "Adroit", def: "skilled, clever, or highly capable–especially in handling situations or using one’s hands or mind", diff: 3 },
+                { word: "Alacrity", def: "brisk and cheerful readiness", diff: 3 },
                 { word: "Arduous", def: "hard because it’s challenging", diff: 3 },
+                { word: "Bamboozle", def: "to trick, deceive, or confuse someone", diff: 3 },
+                { word: "Banal", def: "something that is so ordinary, predictable, or unoriginal that it is boring and ineffective", diff: 3 },
+                { word: "Colloquial", def: "used in ordinary or familiar conversation; not formal or literary", diff: 3 },
+                { word: "Corroborate", def: "confirm or give support to (a statement, theory, or finding)", diff: 3 },
+                { word: "Culminate", def: "to reach a high point, climax, or final stage of a process", diff: 3 },
                 { word: "Dearth", def: "a lack, scarcity", diff: 3 },
-                { word: "Depravity", def: "wickedness", diff: 3 },
-                { word: "Egregious", def: "shockingly bad", diff: 3 },
-                { word: "Embezzle", def: "steal", diff: 3 },
-                { word: "Fatuous", def: "silly and pointless", diff: 3 },
-                { word: "Hubristic", def: "excessively proud or arrogant; overconfident in a way that can lead to downfall", diff: 3 },
-                { word: "Idiosyncrasy", def: "a mode of behavior or way of thought peculiar to an individual", diff: 3 },
-                { word: "Inane", def: "silly or pointless", diff: 3 },
+                { word: "Empirical", def: "based on observation or experience", diff: 3 },
+                { word: "Enigmatic", def: "mysterious and difficult to understand", diff: 3 },
+                { word: "Exacerbate", def: "make (a problem, bad situation, or negative feeling) worse", diff: 3 },
+                { word: "Fanatic", def: "any extreme, overhyped individual", diff: 3 },
+                { word: "Fastidious", def: "very attentive to and concerned about accuracy and detail", diff: 3 },
+                { word: "Flaunt", def: "to flex to attract attention or admiration", diff: 3 },
+                { word: "Garrulous", def: "excessively talkative", diff: 3 },
                 { word: "Judicious", def: "showing good judgment", diff: 3 },
                 { word: "Juxtapose", def: "to place two things side-by-side to highlight their differences", diff: 3 },
-                { word: "Laconic", def: "super brief", diff: 3 },
-                { word: "Macabre", def: "disturbing and horrifying because of involvement with or depiction of death and injury", diff: 3 },
-                { word: "Nefarious", def: "wicked, criminal, or extremely impious", diff: 3 },
-                { word: "Puerile", def: "childish, immature, or silly", diff: 3 },
-                { word: "Quibble", def: "a slight objection or criticism about a trivial matter", diff: 3 },
-                { word: "Quip", def: "a clever usually taunting remark", diff: 3 },
-                { word: "Rancid", def: "having a strong unpleasant smell or taste", diff: 3 },
-                { word: "Repugnant", def: "extremely offensive or unacceptable", diff: 3 },
-                { word: "Stigmatize", def: "to mark someone or something with disgrace, shame or a negative label", diff: 3 },
-                { word: "Toilsome", def: "hard because it’s draining and monotonous", diff: 3 },
-                { word: "Zealot", def: "a fanatic devoted to a rigid belief, often aggressively", diff: 3 }
+                { word: "Loquacious", def: "tending to talk a great deal; talkative", diff: 3 },
+                { word: "Magnanimous", def: "very generous or forgiving, especially toward a rival or someone less powerful", diff: 3 },
+                { word: "Myopic", def: "lacking imagination, foresight, or intellectual insight; nearsighted", diff: 3 },
+                { word: "Narcissist", def: "a person who has an excessive interest in or admiration of themselves; often self-centered and lacking empathy", diff: 3 },
+                { word: "Ostracize", def: "to exclude someone from a group, society, or community", diff: 3 },
+                { word: "Paramount", def: "more important than anything else; supreme", diff: 3 },
+                { word: "Retrospect", def: "the act of thinking about or reviewing past events or situations, often with a new perspective or understanding", diff: 3 },
+                { word: "Salient", def: "most important, or prominent; standing out clearly", diff: 3 },
+                { word: "Synthesize", def: "to combine different ideas or things into a single, new whole", diff: 3 },
+                { word: "Ubiquitous", def: "seen almost anywhere you go", diff: 3 },
+                { word: "Venerate", def: "to regard with great respect or admiration", diff: 3 }
             ],
-            extreme: [
+            level4: [
                 { word: "Abstruse", def: "difficult to understand; obscure", diff: 4 },
                 { word: "Adamantine", def: "unbreakable", diff: 4 },
                 { word: "Anathema", def: "something or someone greatly disliked or cursed", diff: 4 },
                 { word: "Arcane", def: "known or understood by only a few; mysterious or secret", diff: 4 },
-                { word: "Assiduous", def: "extremely hard-working and persistent", diff: 4 },
-                { word: "Bloviate", def: "to speak at length in a pompous or boastful way", diff: 4 },
-                { word: "Bucolic", def: "relating to the pleasant aspects of the countryside and country life", diff: 4 },
                 { word: "Castigate", def: "to reprimand or criticize someone severely", diff: 4 },
-                { word: "Charlatan", def: "a person falsely claiming to have a special knowledge or skill; a fraud", diff: 4 },
                 { word: "Collude", def: "to secretly cooperate or plot with others, typically to achieve a deceitful, illegal, or dishonest purpose", diff: 4 },
                 { word: "Compunctious", def: "feeling guilty, remorseful, or uneasy about something you have done or failed to do", diff: 4 },
-                { word: "Cozen", def: "trick or deceive", diff: 4 },
-                { word: "Cupidity", def: "greed for money or possessions", diff: 4 },
-                { word: "Cynosure", def: "the main thing or person that attracts attention", diff: 4 },
+                { word: "Depravity", def: "wickedness", diff: 4 },
                 { word: "Dogmatic", def: "being stubbornly confident in your beliefs or opinions, refusing to consider other viewpoints", diff: 4 },
                 { word: "Dolorous", def: "feeling or expressing great sorrow or distress", diff: 4 },
                 { word: "Draconian", def: "(of laws or their application) excessively harsh and severe", diff: 4 },
+                { word: "Egregious", def: "shockingly bad", diff: 4 },
+                { word: "Embezzle", def: "steal", diff: 4 },
                 { word: "Ephemeral", def: "lasting for a very short time", diff: 4 },
-                { word: "Epistemic", def: "of or relating to knowledge or knowing; cognition", diff: 4 },
                 { word: "Epitome", def: "a perfect example, embodiment", diff: 4 },
                 { word: "Esoteric", def: "understood by only a small, specialized group", diff: 4 },
-                { word: "Ethereal", def: "extremely delicate and light in a way that seems too perfect for this world", diff: 4 },
-                { word: "Fulminate", def: "to complain loudly or angrily", diff: 4 },
-                { word: "Grandiloquent", def: "using fancy, overblown language", diff: 4 },
-                { word: "Hypochondriac", def: "a person who is insanely worried about having a serious illness, often imagining symptoms that aren’t real", diff: 4 },
-                { word: "Iconoclast", def: "someone who challenges traditional beliefs", diff: 4 },
+                { word: "Exonerate", def: "absolve (someone) from blame for a fault or wrongdoing, especially after due consideration of the case", diff: 4 },
+                { word: "Fatuous", def: "silly and pointless", diff: 4 },
+                { word: "Hubristic", def: "excessively proud or arrogant; overconfident in a way that can lead to downfall", diff: 4 },
+                { word: "Inane", def: "silly or pointless", diff: 4 },
                 { word: "Inexorable", def: "impossible to stop or persuade", diff: 4 },
                 { word: "Irreconcilable", def: "impossible to bring into agreement, harmony, or resolution", diff: 4 },
-                { word: "Jejune", def: "shallow, simplistic, and lacking real substance or maturity", diff: 4 },
+                { word: "Laconic", def: "super brief", diff: 4 },
                 { word: "Mendacious", def: "lying or dishonest", diff: 4 },
-                { word: "Meretricious", def: "appearing flashy or attractive on the surface but actually cheap or lacking real value", diff: 4 },
                 { word: "Nadir", def: "the worst or lowest point of something", diff: 4 },
-                { word: "Nominalization", def: "turning a word (usually a verb or adjective) into a noun (FOR EXAMPLE: happy > happiness | logical > logicality)", diff: 4 },
+                { word: "Nefarious", def: "wicked, criminal, or extremely impious", diff: 4 },
                 { word: "Obdurate", def: "stubbornly refusing to change one's opinion or course of action", diff: 4 },
                 { word: "Obfuscate", def: "to make something confusing, unclear, or hard to understand", diff: 4 },
                 { word: "Oblique", def: "not expressed in a straight, direct, or clear way; indirect, vague, or subtly stated", diff: 4 },
                 { word: "Opulent", def: "very rich, luxurious, and extravagant", diff: 4 },
                 { word: "Ostentatious", def: "designed to impress or attract notice; showy", diff: 4 },
-                { word: "Phlegmatic", def: "(of a person) having an unemotional and stolidly calm disposition", diff: 4 },
                 { word: "Pompous", def: "excessively self-important in speech or manner; characterized by inflated, pretentious, or grandiose behavior meant to impress others", diff: 4 },
-                { word: "Premonition", def: "a strong feeling that something is about to happen, especially something unpleasant", diff: 4 },
-                { word: "Punctilious", def: "showing great attention to detail or correct behavior", diff: 4 },
-                { word: "Querulous", def: "constantly complaining", diff: 4 },
-                { word: "Quixotic", def: "super unrealistic and impractical", diff: 4 },
+                { word: "Puerile", def: "childish, immature, or silly", diff: 4 },
+                { word: "Quibble", def: "a slight objection or criticism about a trivial matter", diff: 4 },
+                { word: "Quip", def: "a clever usually taunting remark", diff: 4 },
+                { word: "Rancid", def: "having a strong unpleasant smell or taste", diff: 4 },
+                { word: "Repugnant", def: "extremely offensive or unacceptable", diff: 4 },
                 { word: "Rumination", def: "deep, repetitive thinking over something", diff: 4 },
-                { word: "Salubrious", def: "health-giving; healthy", diff: 4 },
+                { word: "Stigmatize", def: "to mark someone or something with disgrace, shame or a negative label", diff: 4 },
                 { word: "Superfluous", def: "unnecessary/unimportant", diff: 4 },
                 { word: "Taciturn", def: "reserved or uncommunicative in speech; saying very little", diff: 4 },
-                { word: "Threnody", def: "a song, poem, or piece of writing expressing grief, lamentation, or mourning, especially for someone who has died", diff: 4 },
                 { word: "Umbrage", def: "offense or annoyance", diff: 4 },
-                { word: "Valetudinarian", def: "Hypochondriac", diff: 4 },
-                { word: "Vitriolic", def: "harsh, bitter, and aggressive in tone", diff: 4 }
+                { word: "Vehement", def: "showing strong feelings or emotions", diff: 4 },
+                { word: "Vilify", def: "to speak badly about someone, making them seem evil or much worse than they really are", diff: 4 },
+                { word: "Vitriolic", def: "harsh, bitter, and aggressive in tone", diff: 4 },
+                { word: "Zealot", def: "a fanatic devoted to a rigid belief, often aggressively", diff: 4 }
+            ],
+            level5: [
+                { word: "Assiduous", def: "extremely hard-working and persistent", diff: 5 },
+                { word: "Bloviate", def: "to speak at length in a pompous or boastful way", diff: 5 },
+                { word: "Bucolic", def: "relating to the pleasant aspects of the countryside and country life", diff: 5 },
+                { word: "Charlatan", def: "a person falsely claiming to have a special knowledge or skill; a fraud", diff: 5 },
+                { word: "Cozen", def: "trick or deceive", diff: 5 },
+                { word: "Cupidity", def: "greed for money or possessions", diff: 5 },
+                { word: "Cynosure", def: "the main thing or person that attracts attention", diff: 5 },
+                { word: "Epistemic", def: "of or relating to knowledge or knowing; cognition", diff: 5 },
+                { word: "Jejune", def: "shallow, simplistic, and lacking real substance or maturity", diff: 5 },
+                { word: "Valetudinarian", def: "Hypochondriac", diff: 5 },
+                { word: "Threnody", def: "a song, poem, or piece of writing expressing grief, lamentation, or mourning, especially for someone who has died", diff: 5 }
             ]
         };
 
@@ -420,12 +409,7 @@
             const container = document.getElementById('dictionary-list');
             container.innerHTML = '';
             
-            const allWords = [
-                ...vocabPool.easy, 
-                ...vocabPool.medium, 
-                ...vocabPool.hard, 
-                ...vocabPool.extreme
-            ].sort((a, b) => a.word.localeCompare(b.word));
+            const allWords = Object.values(vocabPool).flat().sort((a, b) => a.word.localeCompare(b.word));
 
             allWords.forEach(item => {
                 const div = document.createElement('div');
@@ -437,25 +421,25 @@
             document.getElementById('dictionary-screen').classList.add('active');
         }
 
-        function startGame(difficulty) {
-            currentDifficulty = difficulty;
+        function startGame(mode) {
+            currentDifficulty = mode;
             score = 0;
             questionCount = 0;
 
-            if (difficulty === 'quiz') {
-                const allWords = [
-                    ...vocabPool.easy, 
-                    ...vocabPool.medium, 
-                    ...vocabPool.hard, 
-                    ...vocabPool.extreme
-                ];
+            if (mode === 'quiz') {
+                // Quiz mode: Includes all words including level 5 Skull
+                const allWords = Object.values(vocabPool).flat();
                 currentQueue = allWords.sort(() => Math.random() - 0.5).slice(0, 20);
-                totalQuestions = 20;
-            } else if (difficulty === 'hard') {
-                currentQueue = [...vocabPool.hard, ...vocabPool.extreme].sort(() => Math.random() - 0.5);
                 totalQuestions = currentQueue.length;
-            } else {
-                currentQueue = [...vocabPool[difficulty]].sort(() => Math.random() - 0.5);
+            } else if (mode === 'easy') {
+                currentQueue = [...vocabPool.level1].sort(() => Math.random() - 0.5);
+                totalQuestions = currentQueue.length;
+            } else if (mode === 'medium') {
+                currentQueue = [...vocabPool.level2].sort(() => Math.random() - 0.5);
+                totalQuestions = currentQueue.length;
+            } else if (mode === 'hard') {
+                // Hard mode includes levels 3 and 4 only. Level 5 is excluded.
+                currentQueue = [...vocabPool.level3, ...vocabPool.level4].sort(() => Math.random() - 0.5);
                 totalQuestions = currentQueue.length;
             }
 
@@ -495,8 +479,9 @@
             display.textContent = `what is the definition of: "${currentQuestion.word.toLowerCase()}"?`;
             document.getElementById('feedback').textContent = '';
             
+            // Build options
             let options = [currentQuestion.def];
-            const allPossible = [...vocabPool.easy, ...vocabPool.medium, ...vocabPool.hard, ...vocabPool.extreme];
+            const allPossible = Object.values(vocabPool).flat();
             const otherDefs = allPossible
                 .filter(item => item.word !== currentQuestion.word)
                 .map(item => item.def);
